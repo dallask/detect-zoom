@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zoom detect test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="./detect-zoom.js"></script>
+
+    <style>
+        body {
+            background-color: #83d0c9;
+        }
+        .box {
+            position: absolute;
+            background-color: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+
+    <script>
+        //-----------------------
+        // debouncing plugin by Paul Irish https://www.paulirish.com/2009/throttled-smartresize-jquery-event-handler/
+        //-----------------------
+        (function($,sr){
+            var debounce = function (func, threshold, execAsap) {
+                var timeout;
+
+                return function debounced () {
+                    var obj = this, args = arguments;
+                    function delayed () {
+                        if (!execAsap)
+                            func.apply(obj, args);
+                        timeout = null;
+                    };
+
+                    if (timeout)
+                        clearTimeout(timeout);
+                    else if (execAsap)
+                        func.apply(obj, args);
+
+                    timeout = setTimeout(delayed, threshold || 100);
+                };
+            }
+            // smartresize
+            jQuery.fn[sr] = function(fn){  return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
+
+        })(jQuery,'smartresize');
+
+
+
+
+        $(document).ready(function() {
+            //-----------------------
+            // Custom functions
+            //-----------------------
+            var aZoom = $('.a-zoom');
+            var dZoomInit = $('.d-zoom-init');
+            var dZoom = $('.d-zoom');
+            var $body = $("body");
+            function getZoomValues () {
+                var zoom = detectZoom.zoom();
+                var deviceInit = detectZoom.deviceInit();
+                var device = detectZoom.device();
+                var newZoomVal = parseFloat(zoom,10).toFixed(2);
+                var newDeviceVal = parseFloat(device,10).toFixed(2);
+                var newDeviceInitVal = parseFloat(deviceInit,10).toFixed(2);
+                aZoom.text(newZoomVal);
+                dZoomInit.text(newDeviceInitVal);
+                dZoom.text(newDeviceVal);
+                changeBackground(newZoomVal);
+
+            }
+
+            function changeBackground (zoom) {
+                if ( zoom == 1.00) {
+                    $body.css({"background": "#83d0c9"});
+                }else if ( zoom == 1.10) {
+                    $body.css({"background": "#65c3ba"});
+                }
+                else if ( zoom == 1.25) {
+                    $body.css({"background": "#54b2a9"});
+                }
+                else if ( zoom == 1.50) {
+                    $body.css({"background": "#35a79c"});
+                }
+                else if ( zoom == 1.75) {
+                    $body.css({"background": "#009688"});
+                }
+                else if ( zoom == 0.90) {
+                    $body.css({"background": "#87BDD1"});
+                }
+                else if ( zoom == 0.75) {
+                    $body.css({"background": "#66A4BC"});
+                }
+                else if ( zoom == 0.67) {
+                    $body.css({"background": "#3A819C"});
+                }
+                else if ( zoom == 0.50) {
+                    $body.css({"background": "#17627E"});
+                }
+
+            }
+
+            getZoomValues();
+
+            $(window).smartresize(function(){
+                getZoomValues();
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div class="box">
+    <div> Actual zoom: <span class="a-zoom"></span></div>
+    <div> Device Init zoom: <span class="d-zoom-init"></span></div>
+    <div> Device zoom: <span class="d-zoom"></span></div>
+</div>
+</body>
+</html>

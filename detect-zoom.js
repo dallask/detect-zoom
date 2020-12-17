@@ -24,6 +24,12 @@
 }(window, 'detectZoom', function () {
 
     /**
+     * devicePixelRatio Initial value
+     * @type {number}
+     */
+    var devicePixelRatioInitial = window.devicePixelRatio || 1;
+
+    /**
      * Use devicePixelRatio if supported by the browser
      * @return {Number}
      * @private
@@ -40,7 +46,8 @@
     var fallback = function () {
         return {
             zoom: 1,
-            devicePxPerCssPx: 1
+            devicePixelRatioInitial: 1,
+            devicePxPerCssPx: 1,
         };
     };
     /**
@@ -53,6 +60,7 @@
         var zoom = Math.round((screen.deviceXDPI / screen.logicalXDPI) * 100) / 100;
         return {
             zoom: zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: zoom * devicePixelRatio()
         };
     };
@@ -67,6 +75,21 @@
         var zoom = Math.round((document.documentElement.offsetHeight / window.innerHeight) * 100) / 100;
         return {
             zoom: zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
+            devicePxPerCssPx: zoom * devicePixelRatio()
+        };
+    };
+
+    /**
+     * For IE11.
+     * @return {Object}
+     * @private
+     */
+    var ie11 = function () {
+        var zoom = Math.round((document.documentElement.offsetHeight / window.innerHeight) * 100) / 100;
+        return {
+            zoom: zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: zoom * devicePixelRatio()
         };
     };
@@ -80,6 +103,7 @@
     	var zoom = Math.round(((window.outerWidth) / window.innerWidth)*100) / 100;
         return {
             zoom: zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: zoom * devicePixelRatio()
         };	    
     }
@@ -90,9 +114,10 @@
 	*/
     var safari= function()
     {
-    	var zoom = Math.round(((document.documentElement.clientWidth) / window.innerWidth)*100) / 100;
+        var zoom = Math.round((( window.outerWidth - 5 ) / window.innerWidth) * 100) / 100;
         return {
             zoom: zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: zoom * devicePixelRatio()
         };	    
     }
@@ -111,6 +136,7 @@
         var zoom = deviceWidth / window.innerWidth;
         return {
             zoom: zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: zoom * devicePixelRatio()
         };
     };
@@ -156,6 +182,7 @@
 
         return{
             zoom: zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: zoom * devicePixelRatio()
         };
     };
@@ -175,6 +202,7 @@
         zoom = Math.round(zoom * 100) / 100;
         return {
             zoom: zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: zoom
         };
     };
@@ -191,6 +219,7 @@
     var firefox18 = function () {
         return {
             zoom: firefox4().zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: devicePixelRatio()
         };
     };
@@ -208,6 +237,7 @@
         zoom = Math.round(zoom * 100) / 100;
         return {
             zoom: zoom,
+            devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: zoom * devicePixelRatio()
         };
     };
@@ -279,12 +309,16 @@
         else if (window.navigator.msMaxTouchPoints) {
             func = ie10;
         }
+        // IE11 / Touch
+        else if (navigator.userAgent.indexOf("Trident/7.0") > -1) {
+            func = ie11;
+        }
 		//chrome
 		else if(!!window.chrome && !(!!window.opera || navigator.userAgent.indexOf(' Opera') >= 0)){
 			func = chrome;
 		}
 		//safari
-		else if(Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0){
+		else if(navigator.userAgent.indexOf('Safari') >= 0){
 			func = safari;
 		}	
         //Mobile Webkit
@@ -321,6 +355,14 @@
          */
         zoom: function () {
             return detectFunction().zoom;
+        },
+
+        /**
+         * Ratios.devicePixelRatioInitial shorthand
+         * @return {Number} devicePixelRatioInitial level
+         */
+        deviceInit: function () {
+            return detectFunction().devicePixelRatioInitial;
         },
 
         /**
