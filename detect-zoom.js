@@ -47,7 +47,7 @@
         return {
             zoom: 1,
             devicePixelRatioInitial: 1,
-            devicePxPerCssPx: 1,
+            devicePxPerCssPx: 1
         };
     };
     /**
@@ -86,9 +86,9 @@
      * @private
      */
     var ie11 = function () {
-        var zoom = Math.round((document.documentElement.offsetHeight / window.innerHeight) * 100) / 100;
+        var zoom = Math.round(((window.outerWidth - 10) / window.innerWidth)*100) / 100;
         return {
-            zoom: zoom,
+            zoom: devicePixelRatio(),
             devicePixelRatioInitial: devicePixelRatioInitial,
             devicePxPerCssPx: zoom * devicePixelRatio()
         };
@@ -301,17 +301,17 @@
      */
     var detectFunction = (function () {
         var func = fallback;
+        // IE11
+        if (navigator.userAgent.indexOf("Trident/7.0") >= 0) {
+            func = ie11;
+        }
         //IE8+
-        if (!isNaN(screen.logicalXDPI) && !isNaN(screen.systemXDPI)) {
+        else if (!isNaN(screen.logicalXDPI) && !isNaN(screen.systemXDPI)) {
             func = ie8;
         }
         // IE10+ / Touch
         else if (window.navigator.msMaxTouchPoints) {
             func = ie10;
-        }
-        // IE11 / Touch
-        else if (navigator.userAgent.indexOf("Trident/7.0") > -1) {
-            func = ie11;
         }
 		//chrome
 		else if(!!window.chrome && !(!!window.opera || navigator.userAgent.indexOf(' Opera') >= 0)){
