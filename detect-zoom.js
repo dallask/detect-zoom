@@ -233,7 +233,7 @@
      * @private
      */
     var opera11 = function () {
-        var zoom = window.top.outerWidth / window.top.innerWidth;
+        var zoom = (window.top.outerWidth - 40) / window.top.innerWidth;
         zoom = Math.round(zoom * 100) / 100;
         return {
             zoom: zoom,
@@ -313,6 +313,10 @@
         else if (window.navigator.msMaxTouchPoints) {
             func = ie10;
         }
+        //Opera
+        else if (navigator.userAgent.indexOf('Opera') >= 0 || navigator.userAgent.indexOf('OPR') >= 0) {
+            func = opera11;
+        }
 		//chrome
 		else if(!!window.chrome && !(!!window.opera || navigator.userAgent.indexOf(' Opera') >= 0)){
 			func = chrome;
@@ -328,10 +332,6 @@
         //WebKit
         else if ('webkitRequestAnimationFrame' in window) {
             func = webkit;
-        }
-        //Opera
-        else if (navigator.userAgent.indexOf('Opera') >= 0) {
-            func = opera11;
         }
         //Last one is Firefox
         //FF 18.x
