@@ -104,7 +104,7 @@
         return {
             zoom: zoom,
             devicePixelRatioInitial: devicePixelRatioInitial,
-            devicePxPerCssPx: zoom * devicePixelRatio()
+            devicePxPerCssPx: zoom * devicePixelRatioInitial
         };	    
     }
 
